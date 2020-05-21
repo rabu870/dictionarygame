@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dictionary Game Login</title>
+    <meta name='viewport'>
+    <link href='../assets/media/favicon.ico' type='image/x-icon' rel='shortcut icon'>
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id"
+        content="570971308489-6golgnijuhqlvon7s2av7getpv2j4h4d.apps.googleusercontent.com">
+    <script src='../assets/scripts/libraries/axios.min.js'></script>
+    <script src='../assets/scripts/libraries/sweetalert.min.js'></script>
+    <script src="../assets/scripts/libraries/jquery.min.js"></script>
+
+    <link href='../assets/css/libraries/spectre.min.css' rel='stylesheet' type='text/css'>
+    <link href='../assets/css/libraries/spectre-icons.min.css' rel='stylesheet' type='text/css'>
+    <link href='../assets/css/main.css' rel='stylesheet' type='text/css'>
+
+    <script>
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function deleteCookie(name, path) {
+            if (getCookie(name)) {
+                document.cookie = name + "=" +
+                    ((path) ? ";path=" + path : "") +
+                    ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+            }
+        }
+    </script>
+
+</head>
+
+<body style='background-color: #f7f8f9' onload='deleteCookie("login_key", "/")'>
+    <div class="empty center">
+        <div class='loading loading-lg main-loader' style='display:none;'></div>
+        <div class='container cont' style='width: unset;'>
+            <div class="empty-icon">
+                <i class="icon icon-3x icon-people"></i>
+            </div>
+            <p class="empty-title h5">
+                <div class="g-signin2" style='display: inline-block;' data-onsuccess="onSignIn"></div><br>to PSCS
+                stickering
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function onSignIn(googleUser) {
+            // $('.main-loader').css('display', 'block');
+            // $('.cont').css('display', 'none');
+            $('.main-loader').fadeIn();
+            $('.cont').fadeOut();
+            var id_token = googleUser.getAuthResponse().id_token;
+            var avatar = googleUser.getBasicProfile().getImageUrl();
+            gapi.auth2.getAuthInstance().disconnect().then(function () {
+                axios.get('./authenticate.php?idtoken=' + id_token)
+                    .then(function (response) {
+                        if (response.data == '1') {
+                            document.cookie = "pic=" + encodeURIComponent(avatar) +
+                                "; expires=Thu, 18 Dec 3000 12:00:00 UTC; path=/";
+                            window.location.href = '../admin';
+                        } else if (response.data == '2') {
+                            document.cookie = "pic=" + encodeURIComponent(avatar) +
+                                "; expires=Thu, 18 Dec 3000 12:00:00 UTC; path=/";
+                            window.location.href = '../';
+                        } else if (response.data == '3') {
+                            Swal.fire({
+                                title: 'It seems you\'re not in our database.',
+                                text: 'Please try a different email.',
+                                type: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Google doesn't think you're legitimate.",
+                                text: 'Please try again.',
+                                type: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
