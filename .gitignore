@@ -1,2 +1,3 @@
 login/google-api-php-client/
-vendor/
+backend/vendor/
+backend/connection.php
