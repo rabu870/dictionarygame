@@ -72,6 +72,8 @@ var vm = new Vue({
                         })
                     });
 
+                    self.submissions.unshift(self.submissions.splice(self.submissions.findIndex(x => x.isReal), 1)[0]);
+
                     self.round = {
                         active: true,
                         definition: response.data[3]['definition'],
@@ -115,6 +117,7 @@ var vm = new Vue({
                         });
                     }
                 });
+                self.submissions.unshift(self.submissions.splice(self.submissions.findIndex(x => x.isReal), 1)[0]);
             });
         },
         compileInputs: function () {

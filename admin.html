@@ -25,7 +25,29 @@
         <div class='pad'
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
             <div v-if='activeRound'>
-
+                <p style='font-size: 24px'>Current phase: {{round.voting ? "voting" : "submission"}}</p>
+                <div v-if='round.voting'></div>
+                <div v-else>
+                    <h3>Current Submissions</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Submission</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for='submission in submissions' :key='submission.id'
+                                :class='{active: submission.isReal}'>
+                                <td>{{submission.isReal ? "Owner" : users.find(i => i.id == submission.userId).name}}
+                                </td>
+                                <td>{{submission.submission}}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div v-if='!activeRound'>
                 <h4>Start a round</h4>
