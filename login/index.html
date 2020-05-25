@@ -64,6 +64,7 @@
             gapi.auth2.getAuthInstance().disconnect().then(function () {
                 axios.get('./authenticate.php?idtoken=' + id_token)
                     .then(function (response) {
+                        alert(response.data);
                         if (response.data == '1') {
                             document.cookie = "pic=" + encodeURIComponent(avatar) +
                                 "; expires=Thu, 18 Dec 3000 12:00:00 UTC; path=/";
