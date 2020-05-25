@@ -17,7 +17,16 @@ var vm = new Vue({
         users: [],
         round: {},
         submissions: [],
-        votes: []
+        votes: [],
+        inputWord: '',
+        inputDef: '',
+        inputRev: false,
+        inputNotes: ''
+    },
+    computed: {
+        inputConditions: function () {
+            return this.inputWord != '' && this.inputDef != '';
+        }
     },
     methods: {
         verify: function () {
@@ -73,6 +82,8 @@ var vm = new Vue({
                         word: response.data[3]['word']
                     };
                 }
+                $('.main-loader').fadeOut();
+                $('.pad').fadeIn();
             });
         },
         newRound: function (word, definition, reverse, notes) {
@@ -105,6 +116,10 @@ var vm = new Vue({
                     }
                 });
             });
+        },
+        compileInputs: function () {
+            $('#input-submit').addClass('loading');
+            this.newRound(this.inputWord, this.inputDef, this.inputRev, this.inputNotes);
         }
     },
     beforeMount() {

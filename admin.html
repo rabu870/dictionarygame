@@ -20,7 +20,59 @@
 
 <body>
     <div id="admin-page">
+        <div class='loading loading-lg main-loader'
+            style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'></div>
+        <div class='pad'
+            style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
+            <div v-if='activeRound'>
 
+            </div>
+            <div v-if='!activeRound'>
+                <h4>Start a round</h4>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="form-switch">
+                            <input type="checkbox" id='input-reverse' v-model='inputRev'>
+                            <i class="form-icon"></i> Reverse round?
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-3 col-sm-12">
+                            <label class="form-label" for="input-word">Primary <span style='color: red'>*</span></label>
+                        </div>
+                        <div class="col-9 col-sm-12">
+                            <input class="form-input" type="text" id="input-word" v-model='inputWord'
+                                placeholder="Primary">
+                        </div>
+                    </div>
+                    <p>(what students will make up - Word if normal round, definition if reverse)</p>
+                    <div class="form-group">
+                        <div class="col-3 col-sm-12">
+                            <label class="form-label" for="input-def">Secondary <span
+                                    style='color: red'>*</span></label>
+                        </div>
+                        <div class="col-9 col-sm-12">
+                            <input class="form-input" type="text" id="input-def" v-model='inputDef'
+                                placeholder="Secondary">
+                        </div>
+                    </div>
+                    <p>(what students will guess - definition if normal round, word if reverse)</p>
+                    <div class="form-group">
+                        <div class="col-3 col-sm-12">
+                            <label class="form-label" for="input-notes">Notes?</label>
+                        </div>
+                        <div class="col-9 col-sm-12">
+                            <textarea class="form-input" id="input-notes" placeholder="Notes" v-model='inputNotes'
+                                rows="3"></textarea>
+                        </div>
+                    </div>
+                    <button class='btn btn-primary' :class='{tooltip: !inputConditions}'
+                        data-tooltip='Fill out all required fields' :disabled='!inputConditions' @click='compileInputs'
+                        id='input-submit'>Start
+                        round</button>
+                </form>
+            </div>
+        </div>
     </div>
 </body>
 <script src="./assets/scripts/admin.js"></script>
