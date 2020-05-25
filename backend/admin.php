@@ -48,6 +48,11 @@ if ($access == 1) {
         } else {
             echo "Round creation failed. Please try again.";
         }
+    } elseif($_GET['func'] == 'submissions') {
+        $active = $db->query("SELECT * FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC);
+        $roundid = $active[0]['id'];
+        $submissions = $db->query("SELECT * FROM `submissions` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
+        echo json_encode($submissions, JSON_PRETTY_PRINT);
     }
 } else {
     die();

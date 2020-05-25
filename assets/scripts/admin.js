@@ -6,8 +6,8 @@ var pusher = new Pusher('c23e05d150117a5b82ed', {
 });
 
 var channel = pusher.subscribe('admin-updates');
-channel.bind('my-event', function (data) {
-    //app.messages.push(JSON.stringify(data));
+channel.bind('new-submission', function (data) {
+    vm.updateSubmissions();
 });
 
 var vm = new Vue({
@@ -76,13 +76,34 @@ var vm = new Vue({
             });
         },
         newRound: function (word, definition, reverse, notes) {
-            let self = this;
             axios.get('./backend/admin.php?func=newround&word=' + encodeURIComponent(word) + '&def=' + encodeURIComponent(definition) + '&reverse=' + (reverse ? '1' : '0') + '&notes=' + encodeURIComponent(notes)).then(function (response) {
                 if (response.data == '1') {
                     window.location.href = window.location.href;
                 } else {
                     alert('response.data');
                 }
+            });
+        },
+        updateSubmissions: function () {
+            let self = this;
+            axios.get('./backend/admin.php?func=submissions').then(function (response) {
+                response.data.forEach(sub => {
+                    let i = true;
+                    self.submissions.forEach(old => {
+                        if (old.id == sub.id) {
+                            i = false;
+                        }
+                    });
+                    if (i) {
+                        self.submissions.push({
+                            id: parseInt(sub['id']),
+                            isReal: parseInt(sub['is_real']) == 1 ? true : false,
+                            roundId: parseInt(sub['round_id']),
+                            submission: sub['submission'],
+                            userId: parseInt(sub['user_id'])
+                        });
+                    }
+                });
             });
         }
     },
