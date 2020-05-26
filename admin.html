@@ -30,7 +30,9 @@
                     {{round.voting ? "?" : ((submissions.length-1)/users.length)*100}}% of all users have completed</p>
                 <div v-if='round.voting'></div>
                 <div v-else>
-                    <h3>Current Submissions</h3>
+                    <h3>Current Submissions <span style='float: right;'><button @click='voting()'
+                                class='btn btn-primary'>End submission &
+                                start voting</button></span></h3>
                     <table class="table">
                         <thead>
                             <tr>

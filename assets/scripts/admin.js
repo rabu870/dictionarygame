@@ -168,6 +168,18 @@ var vm = new Vue({
             }).catch(function () {
                 alert('Failed. Try again.')
             });
+        },
+        voting: function () {
+            let self = this;
+            if (confirm("Are you sure you would like to begin voting?")) {
+                axios.get('./backend/admin.php?func=voting').then(function (response) {
+                    if (response.data == '1') {
+                        window.location.href = window.location.href;
+                    } else {
+                        alert(response.data);
+                    }
+                });
+            }
         }
     },
     beforeMount() {

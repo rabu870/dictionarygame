@@ -44,6 +44,8 @@ if ($access == 1) {
         if($db->query("INSERT INTO `rounds` (`word`, `definition`, `active`, `reverse`, `voting`, `notes`) VALUES ('$word', '$def', '1', '$reverse', '0', '$notes')")) {
             $roundid = $db->query("SELECT * FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
             $db->query("INSERT INTO `submissions` (`round_id`, `user_id`, `submission`, `is_real`) VALUES ('$roundid', '0', '$def', '1');");
+            $data['message'] = 'created';
+            $pusher->trigger('student-updates', 'round-update', $data);
             echo '1';
         } else {
             echo "Round creation failed. Please try again.";
@@ -77,6 +79,14 @@ if ($access == 1) {
             echo $edit;
         } else {
             http_response_code(400);
+        }
+    } elseif($_GET['func'] == 'voting') {
+        if($db->query("UPDATE `rounds` SET `voting` = '1' WHERE `active` = '1'")) {
+            $data['message'] = 'voting';
+            $pusher->trigger('student-updates', 'round-update', $data);
+            echo '1';
+        } else {
+            echo "Failed. Try again.";
         }
     }
 } else {
