@@ -1,44 +1,42 @@
 <!DOCTYPE html>
+<html>
 
 <head>
-    <title>Pusher Test</title>
-</head>
+    <title>Dictionary Game Admin Panel</title>
+    <link href="./assets/media/favicon.ico" type="image/x-icon" rel="shortcut icon" />
 
-<body>
-    <h1>Pusher Test</h1>
-    <p>
-        Publish an event to channel <code>my-channel</code>
-        with event name <code>my-event</code>; it will appear below:
-    </p>
-    <div id="app">
-        <ul>
-            <li v-for="message in messages">
-                {{message}}
-            </li>
-        </ul>
-    </div>
+    <script src="./assets/scripts/libraries/axios.min.js"></script>
+    <script src="./assets/scripts/libraries/sweetalert.min.js"></script>
+    <script src="./assets/scripts/libraries/vue.js"></script>
+    <script src="./assets/scripts/libraries/jquery.min.js"></script>
 
     <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script>
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
 
-        var pusher = new Pusher('c23e05d150117a5b82ed', {
-            cluster: 'us3'
-        });
+    <link href="./assets/css/libraries/spectre.min.css" rel="stylesheet" type="text/css" />
+    <link href="./assets/css/main.css" rel="stylesheet" type="text/css" />
+    <link href="./assets/css/libraries/spectre-icons.min.css" rel="stylesheet" type="text/css" />
 
-        var channel = pusher.subscribe('my-channel');
-        channel.bind('my-event', function (data) {
-            app.messages.push(JSON.stringify(data));
-        });
+</head>
 
-        // Vue application
-        let app = new Vue({
-            el: '#app',
-            data: {
-                messages: [],
-            },
-        });
-    </script>
+<body>
+    <div id="admin-page">
+        <div class='loading loading-lg main-loader'
+            style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'></div>
+        <div class='pad'
+            style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
+            <div v-if='activeRound' style='min-width: 600px;'>
+
+            </div>
+            <div v-if='!activeRound'>
+                <div class="empty">
+                    <p class="empty-title h5">There is not currently an active round</p>
+                    <p class="empty-subtitle">When the round starts, this page will automatically update.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+<script src="./assets/scripts/main.js"></script>
+
+</html>
