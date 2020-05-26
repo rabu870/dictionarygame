@@ -10,6 +10,11 @@ channel.bind('new-submission', function (data) {
     vm.updateSubmissions();
 });
 
+// var channel = pusher.subscribe('student-updates');
+// channel.bind('sub-removed', function (data) {
+//     alert(data.message);
+// });
+
 var vm = new Vue({
     el: '#admin-page',
     data: {
@@ -123,6 +128,46 @@ var vm = new Vue({
         compileInputs: function () {
             $('#input-submit').addClass('loading');
             this.newRound(this.inputWord, this.inputDef, this.inputRev, this.inputNotes);
+        },
+        rejectSub: function (sub) {
+            let self = this;
+            if (confirm('Are you sure you\'d like to remove the submission "' + sub.submission + '"?')) {
+                sub.submission = 'removing...';
+                axios.get('./backend/admin.php?func=removesub&subid=' + sub.id).then(function (response) {
+                    if (response.data == '1') {
+                        self.submissions.splice(self.submissions.findIndex(item => item.id == sub.id), 1);
+                        alert("Removed.");
+                    } else {
+                        alert(response.data);
+                    }
+                });
+            }
+        },
+        editSub: function (sub) {
+            let self = this;
+            let edit = prompt("Edit submission", sub.submission);
+            if (!(edit == null || edit == '')) {
+                sub.submission = 'updating...';
+                axios.get('./backend/admin.php?func=updatesub&subid=' + sub.id + '&update=' + encodeURIComponent(edit)).then(function (response) {
+                    if (response.data == '1') {
+                        self.submissions[self.submissions.findIndex(item => item.id == sub.id)].submission = edit;
+                    } else {
+                        alert(response.data);
+                    }
+                });
+            }
+        },
+        fixSub: function (sub) {
+            let self = this;
+            let edit = sub.submission.replace(/\.$/, "");
+            edit = edit[0].toLowerCase() + edit.substring(1);
+            alert(edit);
+            sub.submission = 'fixing...';
+            axios.get('./backend/admin.php?func=autofix&subid=' + sub.id + '&update=' + encodeURIComponent(edit)).then(function (response) {
+                self.submissions[self.submissions.findIndex(item => item.id == sub.id)].submission = response.data;
+            }).catch(function () {
+                alert('Failed. Try again.')
+            });
         }
     },
     beforeMount() {

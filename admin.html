@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
     <link href="./assets/css/libraries/spectre.min.css" rel="stylesheet" type="text/css" />
+    <link href="./assets/css/admin.css" rel="stylesheet" type="text/css" />
     <link href="./assets/css/libraries/spectre-icons.min.css" rel="stylesheet" type="text/css" />
 
 </head>
@@ -24,7 +25,7 @@
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'></div>
         <div class='pad'
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
-            <div v-if='activeRound'>
+            <div v-if='activeRound' style='min-width: 600px;'>
                 <p style='font-size: 24px'>Current phase: {{round.voting ? "voting" : "submission"}}</p>
                 <div v-if='round.voting'></div>
                 <div v-else>
@@ -40,10 +41,18 @@
                         <tbody>
                             <tr v-for='submission in submissions' :key='submission.id'
                                 :class='{active: submission.isReal}'>
-                                <td>{{submission.isReal ? "Owner" : users.find(i => i.id == submission.userId).name}}
+                                <td>{{submission.isReal ? "Real" : users.find(i => i.id == submission.userId).name}}
                                 </td>
                                 <td>{{submission.submission}}</td>
-                                <td></td>
+                                <td><span v-if='!submission.isReal'><button class='btn btn-primary tooltip tooltip-top'
+                                            data-tooltip='Reject submission' @click='rejectSub(submission)'><i
+                                                class="icon icon-delete"></i></button><button
+                                            class='btn btn-primary tooltip tooltip-top m5-left'
+                                            data-tooltip='Edit submission' @click='editSub(submission)'><i
+                                                class="icon icon-edit"></i></button><button
+                                            class='btn btn-primary tooltip tooltip-top m5-left'
+                                            data-tooltip='Auto-fix formatting' @click='fixSub(submission)'><i
+                                                class="icon icon-message"></i></button></span></td>
                             </tr>
                         </tbody>
                     </table>

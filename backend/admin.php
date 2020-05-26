@@ -53,6 +53,31 @@ if ($access == 1) {
         $roundid = $active[0]['id'];
         $submissions = $db->query("SELECT * FROM `submissions` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
         echo json_encode($submissions, JSON_PRETTY_PRINT);
+    } elseif($_GET['func'] == 'removesub') {
+        $subid = $_GET['subid'];
+        if($db->query("DELETE FROM `submissions` WHERE `id` = '$subid'")) {
+            $data['message'] = $subid;
+            $pusher->trigger('student-updates', 'sub-removed', $data);
+            echo '1';
+        } else {
+            echo "Failed. Try again.";
+        }
+    } elseif($_GET['func'] == 'updatesub') {
+        $subid = $_GET['subid'];
+        $edit = $_GET['update'];
+        if($db->query("UPDATE `submissions` SET `submission` = '$edit' WHERE `id` = '$subid'")) {
+            echo '1';
+        } else {
+            echo "Failed. Try again.";
+        }
+    } elseif($_GET['func'] == 'autofix') {
+        $subid = $_GET['subid'];
+        $edit = $_GET['update'];
+        if($db->query("UPDATE `submissions` SET `submission` = '$edit' WHERE `id` = '$subid'")) {
+            echo $edit;
+        } else {
+            http_response_code(400);
+        }
     }
 } else {
     die();
