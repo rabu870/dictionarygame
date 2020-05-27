@@ -23,13 +23,18 @@ if ($access == 1) {
     if ($_GET['func'] == 'load') {
         if($db->query("SELECT `id` FROM `rounds` WHERE `active` = '1'")->num_rows > 0) {
             if($db->query("SELECT `id` FROM `rounds` WHERE `active` = '1' AND `voting` = '1'")->num_rows > 0) {
-
+                $users = $db->query("SELECT `id`, `email`, `full_name`, `score` FROM `users`")->fetch_all(MYSQLI_ASSOC);
+                $active = $db->query("SELECT * FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC);
+                $roundid = $active[0]['id'];
+                $submissions = $db->query("SELECT * FROM `submissions` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
+                $votes = $db->query("SELECT * FROM `votes` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
+                echo "[1, 1, " . json_encode($users, JSON_PRETTY_PRINT) . ', ' . json_encode($submissions, JSON_PRETTY_PRINT) . ', ' . json_encode($active[0], JSON_PRETTY_PRINT) . ', ' . json_encode($votes, JSON_PRETTY_PRINT) . "]";
             } else {
                 $users = $db->query("SELECT `id`, `email`, `full_name`, `score` FROM `users`")->fetch_all(MYSQLI_ASSOC);
                 $active = $db->query("SELECT * FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC);
                 $roundid = $active[0]['id'];
                 $submissions = $db->query("SELECT * FROM `submissions` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
-                echo "[1, " . json_encode($users, JSON_PRETTY_PRINT) . ', ' . json_encode($submissions, JSON_PRETTY_PRINT) . ', ' . json_encode($active[0], JSON_PRETTY_PRINT) . "]";
+                echo "[1, 0, " . json_encode($users, JSON_PRETTY_PRINT) . ', ' . json_encode($submissions, JSON_PRETTY_PRINT) . ', ' . json_encode($active[0], JSON_PRETTY_PRINT) . "]";
             }
         } else {
             $users = $db->query("SELECT `id`, `email`, `full_name`, `score` FROM `users`")->fetch_all(MYSQLI_ASSOC);
@@ -55,6 +60,11 @@ if ($access == 1) {
         $roundid = $active[0]['id'];
         $submissions = $db->query("SELECT * FROM `submissions` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
         echo json_encode($submissions, JSON_PRETTY_PRINT);
+    } elseif($_GET['func'] == 'votes') {
+        $active = $db->query("SELECT * FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC);
+        $roundid = $active[0]['id'];
+        $votes = $db->query("SELECT * FROM `votes` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
+        echo json_encode($votes, JSON_PRETTY_PRINT);
     } elseif($_GET['func'] == 'removesub') {
         $subid = $_GET['subid'];
         if($db->query("DELETE FROM `submissions` WHERE `id` = '$subid'")) {
@@ -83,6 +93,14 @@ if ($access == 1) {
     } elseif($_GET['func'] == 'voting') {
         if($db->query("UPDATE `rounds` SET `voting` = '1' WHERE `active` = '1'")) {
             $data['message'] = 'voting';
+            $pusher->trigger('student-updates', 'round-update', $data);
+            echo '1';
+        } else {
+            echo "Failed. Try again.";
+        }
+    } elseif($_GET['func'] == 'end') {
+        if($db->query("UPDATE `rounds` SET `active` = '0' WHERE `active` = '1'")) {
+            $data['message'] = 'end';
             $pusher->trigger('student-updates', 'round-update', $data);
             echo '1';
         } else {

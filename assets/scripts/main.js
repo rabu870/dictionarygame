@@ -10,23 +10,36 @@ var pusher = new Pusher('c23e05d150117a5b82ed', {
 //     vm.updateSubmissions();
 // });
 
-// var channel = pusher.subscribe('student-updates');
-// channel.bind('sub-removed', function (data) {
-//     alert(data.message);
-// });
+var channel = pusher.subscribe('student-updates');
+channel.bind('round-update', function (data) {
+    vm.roundUpdate(data.message);
+});
 
 var vm = new Vue({
     el: '#admin-page',
     data: {
         activeRound: false,
-        round: {}
+        round: {},
+        inputWord: '',
+        submitted: false,
+        voted: false,
+        submissions: [],
+        currentVote: Number
+    },
+    computed: {
+        inputConditions: function () {
+            return this.inputWord != '';
+        },
+        inputConditionsV: function () {
+            return this.currentVote != '';
+        },
     },
     methods: {
         verify: function () {
             axios
                 .get('./backend/verify.php?client=true')
                 .then(function (response) {
-                    if (response.data == '0' || response.data == '2') {
+                    if (response.data == '0' || response.data == '1') {
                         window.location.href = 'login/';
                     }
                 });
@@ -35,10 +48,73 @@ var vm = new Vue({
             let self = this;
             axios.get('./backend/main.php?func=load').then(function (response) {
                 if (!response.data[0] == '0') {
-                    self.activeRound = true;
+                    if (response.data[1] == '0') {
+                        self.activeRound = true;
+
+                        self.round = {
+                            active: true,
+                            definition: response.data[2]['definition'],
+                            id: parseInt(response.data[2]['id']),
+                            notes: response.data[2]['notes'],
+                            reverse: parseInt(response.data[2]['reverse']),
+                            voting: parseInt(response.data[2]['voting']) == 1 ? true : false,
+                            word: response.data[2]['word']
+                        };
+
+                        self.submitted = response.data[3];
+                    } else {
+                        self.activeRound = true;
+
+                        self.round = {
+                            active: true,
+                            definition: response.data[2]['definition'],
+                            id: parseInt(response.data[2]['id']),
+                            notes: response.data[2]['notes'],
+                            reverse: parseInt(response.data[2]['reverse']),
+                            voting: parseInt(response.data[2]['voting']) == 1 ? true : false,
+                            word: response.data[2]['word']
+                        };
+
+                        self.voted = response.data[3];
+
+                        response.data[4].forEach(submission => {
+                            self.submissions.push({
+                                id: parseInt(submission['id']),
+                                submission: submission['submission'],
+                            })
+                        });
+                    }
+
                 }
                 $('.main-loader').fadeOut();
                 $('.pad').fadeIn();
+            });
+        },
+        roundUpdate: function (data) {
+            this.query();
+        },
+        submitWord: function () {
+            let self = this;
+            $('#input-submit').addClass('loading');
+            axios.get('./backend/main.php?func=sub&sub=' + encodeURIComponent(self.inputWord)).then(function (response) {
+                if (response.data == '1') {
+                    self.query();
+                    $('#input-submit').removeClass('loading');
+                } else {
+                    alert(response.data);
+                }
+            });
+        },
+        vote: function () {
+            let self = this;
+            $('#input-vote').addClass('loading');
+            axios.get('./backend/main.php?func=vote&sub=' + self.currentVote).then(function (response) {
+                if (response.data == '1') {
+                    self.query();
+                    $('#input-vote').removeClass('loading');
+                } else {
+                    alert(response.data);
+                }
             });
         }
     },

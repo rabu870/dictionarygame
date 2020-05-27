@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Dictionary Game Admin Panel</title>
+    <title>Dictionary Game</title>
     <link href="./assets/media/favicon.ico" type="image/x-icon" rel="shortcut icon" />
 
     <script src="./assets/scripts/libraries/axios.min.js"></script>
@@ -26,7 +26,57 @@
         <div class='pad'
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
             <div v-if='activeRound' style='min-width: 600px;'>
-
+                <div v-if='round.voting'>
+                    <div v-if='voted'>
+                        <div class="empty">
+                            <p class="empty-title h5">Thank you for your vote</p>
+                            <p class="empty-subtitle">This page will automatically update when the next round begins.
+                            </p>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <h4>Vote for a {{round.reverse ? 'definition' : 'word'}}</h4>
+                        <form class="form">
+                            <div class="form-group">
+                                <label class='form-radio' v-for='submission in submissions' :key='submission.id'>
+                                    <input name='vote' type="radio" :value="submission.id" v-model="currentVote">
+                                    <i class="form-icon"></i> {{submission.submission}}
+                                </label>
+                            </div>
+                            <button class='btn btn-primary' :class='{tooltip: !inputConditionsV}'
+                                data-tooltip='Fill out all required fields' :disabled='!inputConditionsV'
+                                @click='vote()' id='input-vote'>Submit vote</button>
+                        </form>
+                    </div>
+                </div>
+                <div v-else>
+                    <div v-if='submitted'>
+                        <div class="empty">
+                            <p class="empty-title h5">Thank you for your submission</p>
+                            <p class="empty-subtitle">When voting starts, this page will automatically update.</p>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <h4>Submit a {{round.reverse ? 'definition' : 'word'}}</h4>
+                        <p v-if='round.reverse' class='tile-subtitle'>Reverse round</p>
+                        <p>{{round.notes}}</p>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <div class="col-3 col-sm-12">
+                                    <label class="form-label" for="input-word">{{round.reverse ? 'definition' : 'word'}}
+                                        <span style='color: red'>*</span></label>
+                                </div>
+                                <div class="col-9 col-sm-12">
+                                    <input class="form-input" type="text" id="input-word" v-model='inputWord'>
+                                </div>
+                            </div>
+                            <button class='btn btn-primary' :class='{tooltip: !inputConditions}'
+                                data-tooltip='Fill out all required fields' :disabled='!inputConditions'
+                                @click='submitWord' id='input-submit'>Submit
+                                {{round.reverse ? 'definition' : 'word'}}</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div v-if='!activeRound'>
                 <div class="empty">

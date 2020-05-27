@@ -23,16 +23,66 @@ if ($access == 2) {
     if ($_GET['func'] == 'load') {
         if($db->query("SELECT `id` FROM `rounds` WHERE `active` = '1'")->num_rows > 0) {
             if($db->query("SELECT `id` FROM `rounds` WHERE `active` = '1' AND `voting` = '1'")->num_rows > 0) {
-
-            } else {
-                $users = $db->query("SELECT `id`, `email`, `full_name`, `score` FROM `users`")->fetch_all(MYSQLI_ASSOC);
                 $active = $db->query("SELECT * FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC);
                 $roundid = $active[0]['id'];
-                $submissions = $db->query("SELECT * FROM `submissions` WHERE `round_id` = '$roundid'")->fetch_all(MYSQLI_ASSOC);
-                echo "[1, " . json_encode($users, JSON_PRETTY_PRINT) . ', ' . json_encode($submissions, JSON_PRETTY_PRINT) . ', ' . json_encode($active[0], JSON_PRETTY_PRINT) . "]";
+                $key = $_COOKIE["login_key"];
+                $activeid = $active[0]['id'];
+                $id = $db->query("SELECT `id` FROM `users` WHERE `login_key` = '$key'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
+                $voted = $db->query("SELECT `id` FROM `votes` WHERE `user_id` = '$id' AND `round_id` = '$activeid'")->num_rows > 0;
+                $submissions = $db->query("SELECT `id`, `submission` FROM `submissions` WHERE `round_id` = '$roundid' ORDER BY RAND()")->fetch_all(MYSQLI_ASSOC);
+                echo "[1, 1, " . json_encode($active[0], JSON_PRETTY_PRINT) . ', ' . json_encode($voted) . ', '. json_encode($submissions) . "]";
+            } else {
+                $active = $db->query("SELECT * FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC);
+                $roundid = $active[0]['id'];
+                $key = $_COOKIE["login_key"];
+                $activeid = $active[0]['id'];
+                $id = $db->query("SELECT `id` FROM `users` WHERE `login_key` = '$key'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
+                $submitted = $db->query("SELECT `id` FROM `submissions` WHERE `user_id` = '$id' AND `round_id` = '$activeid'")->num_rows > 0;
+                echo "[1, 0, " . json_encode($active[0], JSON_PRETTY_PRINT) . ', ' . json_encode($submitted) . "]";
             }
         } else {
             echo "[0]";
+        }
+    } elseif($_GET['func'] == 'sub') {
+        $sub = $_GET['sub'];
+        $key = $_COOKIE["login_key"];
+        $activeid = $db->query("SELECT id FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
+        $id = $db->query("SELECT `id` FROM `users` WHERE `login_key` = '$key'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
+        $submitted = $db->query("SELECT `id` FROM `submissions` WHERE `user_id` = '$id' AND `round_id` = '$activeid'")->num_rows > 0;
+        $voting = $db->query("SELECT `id` FROM `rounds` WHERE `active` = '1' AND `voting` = '1'")->num_rows > 0;
+        if(!$submitted || $sub != '' || !$voting) {
+            if($db->query("INSERT INTO `submissions` (`round_id`, `user_id`, `submission`, `is_real`) VALUES ('$activeid', '$id', '$sub', '0');")) {
+                $data['message'] = '1';
+                $pusher->trigger('admin-updates', 'new-submission', $data);
+            } else {
+                echo 'Failed. Try again.';
+            }
+        } else {
+            echo "Something's wrong...";
+        }
+    } elseif($_GET['func'] == 'vote') {
+        $sub = $_GET['sub'];
+        $activeid = $db->query("SELECT id FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
+        $key = $_COOKIE["login_key"];
+        $id = $db->query("SELECT `id` FROM `users` WHERE `login_key` = '$key'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
+        $voted = $db->query("SELECT `id` FROM `votes` WHERE `user_id` = '$id' AND `round_id` = '$activeid'")->num_rows > 0;
+        $voting = $db->query("SELECT `id` FROM `rounds` WHERE `active` = '1' AND `voting` = '1'")->num_rows > 0;
+        if(!$voted || $sub != '' || $voting) {
+            if($db->query("INSERT INTO `votes` (`round_id`, `user_id`, `submission_id`) VALUES ('$activeid', '$id', '$sub');")) {
+                $subinfo = $db->query("SELECT * FROM `submissions` WHERE `id` = '$sub'")->fetch_all(MYSQLI_ASSOC)[0];
+                if($subinfo['is_real'] == '1') {
+                    $db->query("UPDATE `users` SET `score` = `score` + 2 WHERE `id` = '$id'");
+                } else {
+                    $authorid = $db->query("SELECT `user_id` FROM `submissions` WHERE `id` = '$sub'")->fetch_all()[0]['id'];
+                    $db->query("UPDATE `users` SET `score` = `score` + 1 WHERE `id` = '$authorid'");
+                }
+                $data['message'] = '1';
+                $pusher->trigger('admin-updates', 'new-vote', $data);
+            } else {
+                echo 'Failed. Try again.';
+            }
+        } else {
+            echo "Something's wrong...";
         }
     }
 } else {
