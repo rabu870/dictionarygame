@@ -53,12 +53,12 @@ var vm = new Vue({
 
                         self.round = {
                             active: true,
-                            definition: response.data[2]['definition'],
                             id: parseInt(response.data[2]['id']),
-                            notes: response.data[2]['notes'],
+                            notes: decodeURIComponent(response.data[2]['notes']),
                             reverse: parseInt(response.data[2]['reverse']),
                             voting: parseInt(response.data[2]['voting']) == 1 ? true : false,
-                            word: response.data[2]['word']
+                            word: decodeURIComponent(response.data[2]['word']),
+                            accepting: parseInt(response.data[2]['acceptingvotes']) == 1 ? true : false
                         };
 
                         self.submitted = response.data[3];
@@ -67,12 +67,12 @@ var vm = new Vue({
 
                         self.round = {
                             active: true,
-                            definition: response.data[2]['definition'],
                             id: parseInt(response.data[2]['id']),
-                            notes: response.data[2]['notes'],
+                            notes: decodeURIComponent(response.data[2]['notes']),
                             reverse: parseInt(response.data[2]['reverse']),
                             voting: parseInt(response.data[2]['voting']) == 1 ? true : false,
-                            word: response.data[2]['word']
+                            word: decodeURIComponent(response.data[2]['word']),
+                            accepting: parseInt(response.data[2]['acceptingvotes']) == 1 ? true : false
                         };
 
                         self.voted = response.data[3];
@@ -80,7 +80,7 @@ var vm = new Vue({
                         response.data[4].forEach(submission => {
                             self.submissions.push({
                                 id: parseInt(submission['id']),
-                                submission: submission['submission'],
+                                submission: decodeURIComponent(submission['submission']),
                             })
                         });
                     }
@@ -91,6 +91,7 @@ var vm = new Vue({
             });
         },
         roundUpdate: function (data) {
+            this.submissions = [];
             this.query();
         },
         submitWord: function () {
@@ -100,8 +101,9 @@ var vm = new Vue({
                 if (response.data == '1') {
                     self.query();
                     $('#input-submit').removeClass('loading');
+                    self.inputWord = '';
                 } else {
-                    alert(response.data);
+                    console.log(response.data);
                 }
             });
         },
@@ -113,9 +115,10 @@ var vm = new Vue({
                     self.query();
                     $('#input-vote').removeClass('loading');
                 } else {
-                    alert(response.data);
+                    console.log(response.data);
                 }
             });
+            return false;
         }
     },
     beforeMount() {

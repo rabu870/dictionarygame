@@ -27,24 +27,26 @@
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
             <div v-if='activeRound' style='min-width: 600px;'>
                 <p style='font-size: 20px'>Current phase: {{round.voting ? "voting" : "submission"}};
-                    {{round.voting ? ((votes.length)/users.length)*100 : ((submissions.length-1)/users.length)*100}}% of
-                    all users have completed</p>
+                    {{round.voting ? votes.length + '/' + users.length : submissions.length-1 + '/' + users.length}} of
+                    users have completed</p>
                 <div v-if='round.voting'>
-                    <h3>Current Votes <span style='float: right;'><button @click='endRound()'
-                                class='btn btn-primary'>End round</button></span></h3>
+                    <h3>Current Votes <span style='float: right;'><button type="button" v-if='round.accepting'
+                                @click='endVoting()' class='btn btn-primary'>End voting</button><button type="button"
+                                v-else @click='endRound()' class='btn btn-primary'>End round</button></span></h3>
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Author</th>
                                 <th>Submission</th>
                                 <th>Votes</th>
-                                <th>More info</th>
+                                <th>Who voted</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for='submission in submissions' :key='submission.id'>
-                                <td>{{submission.isReal ? "Real" : users.find(i => i.id == submission.userId).name}}
-                                </td>
+                                <td><span class='tooltip tooltip-top'
+                                        :data-tooltip='submission.isReal ? "Real" : users.find(i => i.id == submission.userId).name + "\n" + users.find(i => i.id == submission.userId).roundScore + " points earned"'>Hover
+                                        to show</span></td>
                                 <td>{{submission.submission}}</td>
                                 <td>{{submission.votes}}</td>
                                 <td>{{getVoters(submission)}}</td>
@@ -53,7 +55,7 @@
                     </table>
                 </div>
                 <div v-else>
-                    <h3>Current Submissions <span style='float: right;'><button @click='voting()'
+                    <h3>Current Submissions <span style='float: right;'><button type="button" @click='voting()'
                                 class='btn btn-primary'>End submission &
                                 start voting</button></span></h3>
                     <table class="table">
@@ -70,12 +72,13 @@
                                 <td>{{submission.isReal ? "Real" : users.find(i => i.id == submission.userId).name}}
                                 </td>
                                 <td>{{submission.submission}}</td>
-                                <td><span v-if='!submission.isReal'><button class='btn btn-primary tooltip tooltip-top'
-                                            data-tooltip='Reject submission' @click='rejectSub(submission)'><i
-                                                class="icon icon-delete"></i></button><button
+                                <td><span v-if='!submission.isReal'><button type="button"
+                                            class='btn btn-primary tooltip tooltip-top' data-tooltip='Reject submission'
+                                            @click='rejectSub(submission)'><i
+                                                class="icon icon-delete"></i></button><button type="button"
                                             class='btn btn-primary tooltip tooltip-top m5-left'
                                             data-tooltip='Edit submission' @click='editSub(submission)'><i
-                                                class="icon icon-edit"></i></button><button
+                                                class="icon icon-edit"></i></button><button type="button"
                                             class='btn btn-primary tooltip tooltip-top m5-left'
                                             data-tooltip='Auto-fix formatting' @click='fixSub(submission)'><i
                                                 class="icon icon-message"></i></button></span></td>

@@ -58,7 +58,8 @@ var vm = new Vue({
                             id: parseInt(student['id']),
                             email: student['email'],
                             name: student['full_name'],
-                            score: parseInt(student['score'])
+                            score: parseInt(student['score']),
+                            roundScore: parseInt(student['round_points'])
                         })
                     });
                 } else {
@@ -69,7 +70,8 @@ var vm = new Vue({
                                 id: parseInt(student['id']),
                                 email: student['email'],
                                 name: student['full_name'],
-                                score: parseInt(student['score'])
+                                score: parseInt(student['score']),
+                                roundScore: parseInt(student['round_points'])
                             })
                         });
                         response.data[3].forEach(submission => {
@@ -77,7 +79,7 @@ var vm = new Vue({
                                 id: parseInt(submission['id']),
                                 isReal: parseInt(submission['is_real']) == 1 ? true : false,
                                 roundId: parseInt(submission['round_id']),
-                                submission: submission['submission'],
+                                submission: decodeURIComponent(submission['submission']),
                                 userId: parseInt(submission['user_id'])
                             })
                         });
@@ -86,12 +88,12 @@ var vm = new Vue({
 
                         self.round = {
                             active: true,
-                            definition: response.data[4]['definition'],
+                            definition: decodeURIComponent(response.data[4]['definition']),
                             id: parseInt(response.data[4]['id']),
-                            notes: response.data[4]['notes'],
+                            notes: decodeURIComponent(response.data[4]['notes']),
                             reverse: parseInt(response.data[4]['reverse']),
-                            voting: parseInt(response.data[4]['voting']),
-                            word: response.data[4]['word']
+                            voting: parseInt(response.data[4]['voting']) == '1' ? true : false,
+                            word: decodeURIComponent(response.data[4]['word'])
                         };
                     } else {
                         response.data[2].forEach(student => {
@@ -99,7 +101,8 @@ var vm = new Vue({
                                 id: parseInt(student['id']),
                                 email: student['email'],
                                 name: student['full_name'],
-                                score: parseInt(student['score'])
+                                score: parseInt(student['score']),
+                                roundScore: parseInt(student['round_points'])
                             })
                         });
                         response.data[3].forEach(submission => {
@@ -107,7 +110,7 @@ var vm = new Vue({
                                 id: parseInt(submission['id']),
                                 isReal: parseInt(submission['is_real']) == 1 ? true : false,
                                 roundId: parseInt(submission['round_id']),
-                                submission: submission['submission'],
+                                submission: decodeURIComponent(submission['submission']),
                                 userId: parseInt(submission['user_id']),
                                 votes: 0
                             })
@@ -115,12 +118,13 @@ var vm = new Vue({
 
                         self.round = {
                             active: true,
-                            definition: response.data[4]['definition'],
+                            definition: decodeURIComponent(response.data[4]['definition']),
                             id: parseInt(response.data[4]['id']),
-                            notes: response.data[4]['notes'],
+                            notes: decodeURIComponent(response.data[4]['notes']),
                             reverse: parseInt(response.data[4]['reverse']) == '1' ? true : false,
                             voting: parseInt(response.data[4]['voting']) == '1' ? true : false,
-                            word: response.data[4]['word']
+                            word: decodeURIComponent(response.data[4]['word']),
+                            accepting: parseInt(response.data[4]['acceptingvotes']) == 1 ? true : false
                         };
 
                         response.data[5].forEach(vote => {
@@ -147,7 +151,7 @@ var vm = new Vue({
             let self = this;
             axios.get('./backend/admin.php?func=newround&word=' + encodeURIComponent(word) + '&def=' + encodeURIComponent(definition) + '&reverse=' + (reverse ? '1' : '0') + '&notes=' + encodeURIComponent(notes)).then(function (response) {
                 if (response.data == '1') {
-                    self.query();
+                    // self.query();
                     $('#input-submit').removeClass('loading');
                 } else {
                     alert('response.data');
@@ -169,7 +173,7 @@ var vm = new Vue({
                             id: parseInt(sub['id']),
                             isReal: parseInt(sub['is_real']) == 1 ? true : false,
                             roundId: parseInt(sub['round_id']),
-                            submission: sub['submission'],
+                            submission: decodeURIComponent(sub['submission']),
                             userId: parseInt(sub['user_id'])
                         });
                     }
@@ -202,7 +206,7 @@ var vm = new Vue({
                 sub.submission = 'updating...';
                 axios.get('./backend/admin.php?func=updatesub&subid=' + sub.id + '&update=' + encodeURIComponent(edit)).then(function (response) {
                     if (response.data == '1') {
-                        self.submissions[self.submissions.findIndex(item => item.id == sub.id)].submission = edit;
+                        self.submissions[self.submissions.findIndex(item => item.id == sub.id)].submission = decodeURIComponent(edit);
                     } else {
                         alert(response.data);
                     }
@@ -215,7 +219,7 @@ var vm = new Vue({
             edit = edit[0].toLowerCase() + edit.substring(1);
             sub.submission = 'fixing...';
             axios.get('./backend/admin.php?func=autofix&subid=' + sub.id + '&update=' + encodeURIComponent(edit)).then(function (response) {
-                self.submissions[self.submissions.findIndex(item => item.id == sub.id)].submission = response.data;
+                self.submissions[self.submissions.findIndex(item => item.id == sub.id)].submission = decodeURIComponent(response.data);
             }).catch(function () {
                 alert('Failed. Try again.')
             });
@@ -239,7 +243,7 @@ var vm = new Vue({
 
                 self.votes = [];
 
-                response.data.forEach(vote => {
+                response.data[0].forEach(vote => {
                     self.votes.push({
                         id: parseInt(vote['id']),
                         roundId: parseInt(vote['round_id']),
@@ -247,6 +251,20 @@ var vm = new Vue({
                         userId: parseInt(vote['user_id'])
                     })
                 });
+
+                let i = [];
+
+                response.data[1].forEach(student => {
+                    i.push({
+                        id: parseInt(student['id']),
+                        email: student['email'],
+                        name: student['full_name'],
+                        score: parseInt(student['score']),
+                        roundScore: parseInt(student['round_points'])
+                    })
+                });
+
+                self.users = i;
 
                 let n = self.submissions.slice();
 
@@ -278,6 +296,18 @@ var vm = new Vue({
         endRound: function () {
             let self = this;
             if (confirm("Are you sure you would like to end this round?")) {
+                axios.get('./backend/admin.php?func=endf').then(function (response) {
+                    if (response.data == '1') {
+                        window.location.href = window.location.href;
+                    } else {
+                        alert(response.data);
+                    }
+                });
+            }
+        },
+        endVoting: function () {
+            let self = this;
+            if (confirm("Are you sure you would like to end voting?")) {
                 axios.get('./backend/admin.php?func=end').then(function (response) {
                     if (response.data == '1') {
                         window.location.href = window.location.href;
