@@ -23,12 +23,11 @@
     <div id="admin-page">
         <div class='loading loading-lg main-loader'
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'></div>
-        <div class='pad'
-            style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
+        <div class='pad' style='margin: 15px'>
             <div v-if='activeRound' style='min-width: 600px;'>
-                <p style='font-size: 20px'>Current phase: {{round.voting ? "voting" : "submission"}};
-                    {{round.voting ? votes.length + '/' + users.length : submissions.length-1 + '/' + users.length}} of
-                    users have completed</p>
+                <p style='font-size: 20px'>Currently accepting: {{round.voting ? "votes" : "submissions"}};
+                    {{round.voting ? votes.length + '/' + users.length : submissions.length-1 + ' of ' + users.length}}
+                    complete</p>
                 <div v-if='round.voting'>
                     <h3>Current Votes <span style='float: right;'><button type="button" v-if='round.accepting'
                                 @click='endVoting()' class='btn btn-primary'>End voting</button><button type="button"
@@ -55,8 +54,8 @@
                     </table>
                 </div>
                 <div v-else>
-                    <h3>Current Submissions <span style='float: right;'><button type="button" @click='voting()'
-                                class='btn btn-primary'>End submission &
+                    <h3>Current Submissions for "{{round.word}}" <span style='float: right;'><button type="button"
+                                @click='voting()' class='btn btn-primary'>End submission &
                                 start voting</button></span></h3>
                     <table class="table">
                         <thead>

@@ -14,13 +14,15 @@
     if ($payload) {
         $email = $payload['email'];
         //verify student
+
+        $uid = uniqid(TRUE);
         if($db->query("SELECT id FROM `users` WHERE `email` = '$email'")->num_rows) {
-            setcookie('login_key', $id_token, time() + (86400 * 5), "/");
-            $db->query("UPDATE `users` SET `login_key` = '$id_token' WHERE `email` = '$email'");
+            setcookie('login_key', $uid, time() + (86400 * 5), "/");
+            $db->query("UPDATE `users` SET `login_key` = '$uid' WHERE `email` = '$email'");
             echo '2';
         } elseif ($db->query("SELECT id FROM `admin` WHERE `email` = '$email'")->num_rows) {
-            setcookie('login_key', $id_token, time() + (86400 * 3), "/");
-            $db->query("UPDATE `admin` SET `login_key` = '$id_token' WHERE `email` = '$email'");
+            setcookie('login_key', $uid, time() + (86400 * 3), "/");
+            $db->query("UPDATE `admin` SET `login_key` = '$uid' WHERE `email` = '$email'");
             echo '1';
         } else {
             echo '3';

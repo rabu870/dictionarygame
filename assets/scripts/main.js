@@ -24,14 +24,14 @@ var vm = new Vue({
         submitted: false,
         voted: false,
         submissions: [],
-        currentVote: Number
+        currentVote: 0
     },
     computed: {
         inputConditions: function () {
             return this.inputWord != '';
         },
         inputConditionsV: function () {
-            return this.currentVote != '';
+            return this.currentVote != 0;
         },
     },
     methods: {

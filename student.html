@@ -23,26 +23,27 @@
     <div id="admin-page">
         <div class='loading loading-lg main-loader'
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'></div>
-        <div class='pad'
-            style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); display: none;'>
+        <div class='pad'>
             <div v-if='activeRound' style='min-width: 600px;'>
                 <div v-if='round.voting'>
-                    <div v-if='voted'>
+                    <div v-if='voted'
+                        style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'>
                         <div class="empty">
                             <p class="empty-title h5">Thank you for your vote</p>
                             <p class="empty-subtitle">This page will automatically update when the next round begins.
                             </p>
                         </div>
                     </div>
-                    <div v-else-if='!round.accepting'>
+                    <div v-else-if='!round.accepting'
+                        style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'>
                         <div class="empty">
                             <p class="empty-title h5">Thank you for your vote</p>
                             <p class="empty-subtitle">This page will automatically update when the next round begins.
                             </p>
                         </div>
                     </div>
-                    <div v-else>
-                        <h4>Vote for a {{round.reverse ? 'definition' : 'word'}}</h4>
+                    <div v-else style='margin: 100px; margin-left: 20%;'>
+                        <h4>Vote for "{{round.word}}"</h4>
                         <form class="form">
                             <div class="form-group">
                                 <label class='form-radio' v-for='submission in submissions' :key='submission.id'>
@@ -56,7 +57,8 @@
                         </form>
                     </div>
                 </div>
-                <div v-else>
+                <div v-else
+                    style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'>
                     <div v-if='submitted'>
                         <div class="empty">
                             <p class="empty-title h5">Thank you for your submission</p>
@@ -86,7 +88,8 @@
                 </div>
             </div>
             <div v-if='!activeRound'>
-                <div class="empty">
+                <div class="empty"
+                    style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'>
                     <p class="empty-title h5">There is not currently an active round</p>
                     <p class="empty-subtitle">When the round starts, this page will automatically update.</p>
                 </div>
