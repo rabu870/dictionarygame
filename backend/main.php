@@ -68,7 +68,7 @@ if ($access == 2) {
         $id = $db->query("SELECT `id` FROM `users` WHERE `login_key` = '$key'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
         $voted = $db->query("SELECT `id` FROM `votes` WHERE `user_id` = '$id' AND `round_id` = '$activeid'")->num_rows > 0;
         $voting = $db->query("SELECT `id` FROM `rounds` WHERE `active` = '1' AND `voting` = '1'")->num_rows > 0;
-        if(!$voted && $sub != '' && $voting && $db->query("SELECT `id` FROM `rounds` WHERE `active` = '1' AND `acceptingvotes` = '1'")->num_rows > 0) {
+        if(!$voted && $sub != '0' && $voting && $db->query("SELECT `id` FROM `rounds` WHERE `active` = '1' AND `acceptingvotes` = '1'")->num_rows > 0) {
             if($db->query("INSERT INTO `votes` (`round_id`, `user_id`, `submission_id`) VALUES ('$activeid', '$id', '$sub');")) {
                 $subinfo = $db->query("SELECT * FROM `submissions` WHERE `id` = '$sub'")->fetch_all(MYSQLI_ASSOC)[0];
                 if($subinfo['is_real'] == '1') {
