@@ -29,9 +29,8 @@
                     {{round.voting ? votes.length + '/' + users.length : submissions.length-1 + ' of ' + users.length}}
                     complete</p>
                 <div v-if='round.voting'>
-                    <h3>Current Votes for <span class='tooltip tooltip-top' :data-tooltip='round.word'>Hover
-                            to show</span> <span style='float: right;'><button type="button" v-if='round.accepting'
-                                @click='endVoting()' class='btn btn-primary'>End
+                    <h3>Current Votes for {{round.word}} <span style='float: right;'><button type="button"
+                                v-if='round.accepting' @click='endVoting()' class='btn btn-primary'>End
                                 voting</button><button type="button" v-else @click='endRound()'
                                 class='btn btn-primary'>End round</button></span></h3>
                     <table class="table">
