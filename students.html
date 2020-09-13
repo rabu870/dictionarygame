@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit students</title>
+    <link href="./assets/media/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+
+    <script src="./assets/scripts/libraries/axios.min.js"></script>
+    <script src="./assets/scripts/libraries/sweetalert.min.js"></script>
+    <script src="./assets/scripts/libraries/vue.js"></script>
+    <script src="./assets/scripts/libraries/jquery.min.js"></script>
+
+    <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <link href="./assets/css/libraries/spectre.min.css" rel="stylesheet" type="text/css" />
+    <link href="./assets/css/main.css" rel="stylesheet" type="text/css" />
+    <link href="./assets/css/libraries/spectre-icons.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id='app'>
+        <button id='scbutton' @click='update'>Save changes</button>
+        <table>
+            <thead>
+                <td>Id</td>
+                <td>Name</td>
+                <td>Email</td>
+                <td>Delete</td>
+            </thead>
+            <tbody>
+                <tr v-for='user in users' :key='user.id'>
+                    <td>{{user.id}}</td>
+                    <td><input v-model='user.name'></td>
+                    <td><input v-model='user.email'></td>
+                    <td><button @click='deluser(user)'>X</button></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><button id='adduserbutton' @click='adduser()'>+</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src='assets/scripts/students.js'></script>
+
+</html>
