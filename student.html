@@ -23,7 +23,7 @@
     <div id="admin-page">
         <div class='loading loading-lg main-loader'
             style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'></div>
-        <div class='pad'>
+        <div class='pad' style='display:none;'>
             <div v-if='activeRound' style='min-width: 600px;'>
                 <div v-if='round.voting'>
                     <div v-if='voted'
@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div v-else
-                    style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);'>
+                    style='position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); min-width: 350px;'>
                     <div v-if='submitted'>
                         <div class="empty">
                             <p class="empty-title h5">Thank you for your submission</p>
