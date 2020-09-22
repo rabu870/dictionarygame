@@ -104,8 +104,7 @@
                             <label class="form-label" for="input-word">Word <span style='color: red'>*</span></label>
                         </div>
                         <div class="col-9 col-sm-12">
-                            <input class="form-input" type="text" id="input-word" v-model='inputWord'
-                                placeholder="Primary">
+                            <input class="form-input" type="text" id="input-word" v-model='inputWord'>
                         </div>
                     </div>
                     <p>(definition if reverse)</p>
@@ -115,8 +114,7 @@
                                     style='color: red'>*</span></label>
                         </div>
                         <div class="col-9 col-sm-12">
-                            <input class="form-input" type="text" id="input-def" v-model='inputDef'
-                                placeholder="Secondary">
+                            <input class="form-input" type="text" id="input-def" v-model='inputDef'>
                         </div>
                     </div>
                     <p>(word if reverse)</p>
@@ -125,8 +123,7 @@
                             <label class="form-label" for="input-notes">Notes?</label>
                         </div>
                         <div class="col-9 col-sm-12">
-                            <textarea class="form-input" id="input-notes" placeholder="Notes" v-model='inputNotes'
-                                rows="3"></textarea>
+                            <textarea class="form-input" id="input-notes" v-model='inputNotes' rows="3"></textarea>
                         </div>
                     </div>
                     <button class='btn btn-primary' :class='{tooltip: !inputConditions}'
