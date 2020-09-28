@@ -29,6 +29,7 @@
                 <td>Id</td>
                 <td>Name</td>
                 <td>Email</td>
+                <td>Score</td>
                 <td>Delete</td>
             </thead>
             <tbody>
@@ -36,9 +37,11 @@
                     <td>{{user.id}}</td>
                     <td><input v-model='user.name'></td>
                     <td><input v-model='user.email'></td>
+                    <td><input v-model='user.score'></td>
                     <td><button @click='deluser(user)'>X</button></td>
                 </tr>
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
