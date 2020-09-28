@@ -32,8 +32,10 @@
                     {{round.voting ? votes.length + '/' + users.length : submissions.length-1 + ' of ' + users.length}}
                     complete</p>
                 <div v-if='round.voting'>
-                    <h3>Current Votes for {{round.word}} <span style='float: right;'><button type="button"
-                                v-if='round.accepting' @click='endVoting()' class='btn btn-primary'>End
+                    <h3>Current Votes for {{round.word}} <span style='float: right;'><span v-if='round.accepting'><label
+                                    for='roundscored'>Scored
+                                    round?</label><input type='checkbox' id='roundscored' checked></span><button
+                                type="button" v-if='round.accepting' @click='endVoting()' class='btn btn-primary'>End
                                 voting</button><button type="button" v-else @click='endRound()'
                                 class='btn btn-primary'>End round</button></span></h3>
                     <table class="table">
@@ -56,6 +58,25 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div v-if='!round.accepting'>
+                        <h3>Current game score</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Overall score</th>
+                                    <th>Points earned this round</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for='user in users' :key='user.id'>
+                                    <td>{{user.name}}</td>
+                                    <td>{{user.score}}</td>
+                                    <td>{{user.roundScore}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div v-else>
                     <h3>Current Submissions for "{{round.word}}" <span style='float: right;'><button type="button"

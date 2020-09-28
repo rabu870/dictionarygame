@@ -72,11 +72,11 @@ if ($access == 2) {
             if($db->query("INSERT INTO `votes` (`round_id`, `user_id`, `submission_id`) VALUES ('$activeid', '$id', '$sub');")) {
                 $subinfo = $db->query("SELECT * FROM `submissions` WHERE `id` = '$sub'")->fetch_all(MYSQLI_ASSOC)[0];
                 if($subinfo['is_real'] == '1') {
-                    $db->query("UPDATE `users` SET `score` = `score` + 2 WHERE `id` = '$id'");
+                    //db->query("UPDATE `users` SET `score` = `score` + 2 WHERE `id` = '$id'");
                     $db->query("UPDATE `users` SET `round_points` = `round_points` + 2 WHERE `id` = '$id'");
                 } else {
                     $authorid = $db->query("SELECT `user_id` FROM `submissions` WHERE `id` = '$sub'")->fetch_all(MYSQLI_ASSOC)[0]['user_id'];
-                    $db->query("UPDATE `users` SET `score` = `score` + 1 WHERE `id` = '$authorid'");
+                    //$db->query("UPDATE `users` SET `score` = `score` + 1 WHERE `id` = '$authorid'");
                     $db->query("UPDATE `users` SET `round_points` = `round_points` + 1 WHERE `id` = '$authorid'");
                 }
                 $data['message'] = '1';

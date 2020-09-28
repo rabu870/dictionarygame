@@ -308,7 +308,8 @@ var vm = new Vue({
         endVoting: function () {
             let self = this;
             if (confirm("Are you sure you would like to end voting?")) {
-                axios.get('./backend/admin.php?func=end').then(function (response) {
+                axios.get('./backend/admin.php?func=end&scored=' +
+                    $('#roundscored').is(":checked")).then(function (response) {
                     if (response.data == '1') {
                         window.location.href = window.location.href;
                     } else {

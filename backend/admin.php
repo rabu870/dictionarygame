@@ -104,6 +104,9 @@ if ($access == 1) {
         }
     } elseif($_GET['func'] == 'end') {
         if($db->query("UPDATE `rounds` SET `acceptingvotes` = '0' WHERE `active` = '1'")) {
+            if($_GET['scored'] == 'true') {
+                $db->query("UPDATE `users` SET `score` = `score` + `round_points` WHERE true");
+            }
             $data['message'] = 'end';
             $pusher->trigger('student-updates', 'round-update', $data);
             echo '1';
