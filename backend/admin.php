@@ -80,7 +80,7 @@ if ($access == 1) {
         }
     } elseif($_GET['func'] == 'updatesub') {
         $subid = $_GET['subid'];
-        $edit = $_GET['update'];
+        $edit = addslashes($_GET['update']);
         if($db->query("UPDATE `submissions` SET `submission` = '$edit' WHERE `id` = '$subid'")) {
             echo '1';
         } else {
@@ -88,9 +88,9 @@ if ($access == 1) {
         }
     } elseif($_GET['func'] == 'autofix') {
         $subid = $_GET['subid'];
-        $edit = $_GET['update'];
+        $edit = addslashes($_GET['update']);
         if($db->query("UPDATE `submissions` SET `submission` = '$edit' WHERE `id` = '$subid'")) {
-            echo $edit;
+            echo $_GET['update'];
         } else {
             http_response_code(400);
         }

@@ -192,7 +192,6 @@ var vm = new Vue({
                 axios.get('./backend/admin.php?func=removesub&subid=' + sub.id).then(function (response) {
                     if (response.data == '1') {
                         self.submissions.splice(self.submissions.findIndex(item => item.id == sub.id), 1);
-                        alert("Removed.");
                     } else {
                         alert(response.data);
                     }

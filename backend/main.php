@@ -44,7 +44,7 @@ if ($access == 2) {
             echo "[0]";
         }
     } elseif($_GET['func'] == 'sub') {
-        $sub = $_GET['sub'];
+        $sub = addslashes($_GET['sub']);
         $key = $_COOKIE["login_key"];
         $activeid = $db->query("SELECT id FROM `rounds` WHERE `active` = '1'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
         $id = $db->query("SELECT `id` FROM `users` WHERE `login_key` = '$key'")->fetch_all(MYSQLI_ASSOC)[0]['id'];
@@ -56,7 +56,7 @@ if ($access == 2) {
                 $pusher->trigger('admin-updates', 'new-submission', $data);
                 echo '1';
             } else {
-                echo 'Failed. Try again.';
+                echo $sub;
             }
         } else {
             echo "Something's wrong...";
